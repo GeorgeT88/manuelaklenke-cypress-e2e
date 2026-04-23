@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/cypress-io/cypress/develop/assets/cypress-logo-dark.png" height="28" align="center" /> Cypress E2E Tests — manuelaklenke.com
+# <img src="https://cdn.simpleicons.org/cypress/69D3A7" height="32" align="center" /> Cypress E2E Tests — manuelaklenke.com
 
 End-to-end test suite for [manuelaklenke.com](https://manuelaklenke.com) using Cypress. Tests run automatically after every deployment and results are published as a Mochawesome report to GitHub Pages.
 
