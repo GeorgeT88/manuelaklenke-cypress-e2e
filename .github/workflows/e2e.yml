@@ -44,7 +44,7 @@ jobs:
 
       - name: Generate HTML report
         if: always()
-        run: npx marge cypress/reports/merged.json --reportDir mochawesome-report --inline
+        run: npx marge cypress/reports/merged.json --reportDir mochawesome-report --reportFilename index --inline
 
       - name: Add .nojekyll
         if: always()
