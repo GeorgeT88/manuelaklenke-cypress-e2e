@@ -1,0 +1,70 @@
+name: Cypress E2E Tests
+
+run-name: >-
+  ${{ github.event_name == 'workflow_dispatch' && 'Cypress E2E Tests — manual run' ||
+      github.event_name == 'repository_dispatch' && 'Cypress E2E Tests — triggered by Vercel deploy' ||
+      github.event_name == 'schedule' && 'Cypress E2E Tests — nightly run' ||
+      'Cypress E2E Tests' }}
+
+on:
+  repository_dispatch:
+    types: [vercel-deploy]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 7 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Cypress E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Cypress E2E tests
+        run: npm test
+        continue-on-error: true
+
+      - name: Merge Mochawesome reports
+        if: always()
+        run: npx mochawesome-merge "cypress/reports/*.json" -o cypress/reports/merged.json
+
+      - name: Generate HTML report
+        if: always()
+        run: npx marge cypress/reports/merged.json --reportDir mochawesome-report --inline
+
+      - name: Add .nojekyll
+        if: always()
+        run: touch mochawesome-report/.nojekyll
+
+      - name: Write test results summary
+        if: always()
+        run: |
+          echo "## Cypress E2E Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** https://manuelaklenke.com" >> $GITHUB_STEP_SUMMARY
+          echo "**Browser:** Chrome" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 [View full Mochawesome report](https://georget88.github.io/manuelaklenke-cypress-e2e/)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Publish Mochawesome report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./mochawesome-report
+          destination_dir: .
