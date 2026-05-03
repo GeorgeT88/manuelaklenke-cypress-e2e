@@ -112,11 +112,3 @@ Tests can also be triggered manually from **Actions → Cypress E2E Tests → Ru
 | Push via app repo | `Cypress E2E Tests — triggered by Vercel deploy` |
 | Manual | `Cypress E2E Tests — manual run` |
 | Nightly schedule (07:00 UTC) | `Cypress E2E Tests — nightly run` |
-
----
-
-## ⚠️ Known App Issues
-
-The following issues exist in the app and are documented in the tests:
-
-- `ipapi.co` CORS errors on all pages — caused by IP-based language detection on a free-tier API
